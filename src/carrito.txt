@@ -1,0 +1,26 @@
+[
+    {
+    "productos": [
+      {
+        "title": "camisa",
+        "price": 20,
+        "thumbnail": "https://d3ugyf2ht6aenh.cloudfront.net/stores/001/323/009/products/negro-35d9e5ef0af75095f216560860367793-1024-1024.jpg",
+        "timestamp": 1669047362438,
+        "stock": 6,
+        "id": 1,
+        "codigo": "1669047362438camisa1"
+      },
+      {
+        "title": "jean",
+        "price": 30,
+        "thumbnail": "https://www.doiteargentina.com.ar/wp-content/uploads/2018/12/pantalon-doite-kawescar-desmontable-trekking-hombre-01.jpg",
+        "timestamp": 1669047362438,
+        "stock": 3,
+        "id": 2,
+        "codigo": "1669047362438jean2"
+      }
+    ],
+    "id": 1,
+    "timestamp": 1669047362439
+  }
+]

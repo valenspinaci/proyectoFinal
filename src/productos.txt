@@ -1,0 +1,29 @@
+[
+  {
+    "title": "Camisa",
+    "price": 25,
+    "thumbnail": "http://d3ugyf2ht6aenh.cloudfront.net/stores/103/133/products/camisa-silver-ridge-mu-l21-523936152c51ab6fa515131786953784-640-0.jpg",
+    "id": 1,
+    "timpestamp": 1668997102143,
+    "stock": 1,
+    "codigo": "1668997102143Camisa1"
+  },
+  {
+    "title": "Pantalon",
+    "price": 35,
+    "thumbnail": "https://media.vogue.es/photos/5cc7367ffdc82261481fda65/master/w_2500,h_3194,c_limit/pantalones_vaqueros_mom_jeans_goma_pull_bear_basico_armario_2019_7512.jpg",
+    "timpestamp": 1668997396340,
+    "id": 2,
+    "codigo": "1668997396340Pantalon2",
+    "stock": 1
+  },
+  {
+    "title": "Gorra",
+    "price": 15,
+    "thumbnail": "https://essential.vtexassets.com/arquivos/ids/611879/034-8045_1.jpg?v=637970210686570000",
+    "timpestamp": 1668997460997,
+    "id": 3,
+    "codigo": "1668997460997Gorra3",
+    "stock": 2
+  }
+]
