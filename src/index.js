@@ -25,24 +25,6 @@ class Contenedor {
         }
     }
 
-    async saveProduct(product){
-        try {
-            const productos = await this.getAll();
-            if(productos.length>0){
-                //Agregar producto adicional
-                product.timestamp = Date.now();
-                productos.push(product);
-                await fs.promises.writeFile(this.filename, JSON.stringify(productos, null, 2));
-            } else{
-                //Agregar primer producto
-                product.timestamp = Date.now();
-                await fs.promises.writeFile(this.filename, JSON.stringify([product], null, 2));
-            }
-        } catch (error) {
-            return "El producto no pudo ser guardado"
-        }
-    }
-
     async getAll(){
         try {
             const contenido = await fs.promises.readFile(this.filename, "utf-8");
@@ -77,17 +59,6 @@ class Contenedor {
         }
     }
 
-    async deleteProductById(id){
-        try {
-            const productos = await this.getAll();
-            const mismoId = productos.filter(product => product.id == id);
-            const productosActualizados = mismoId.splice(0,1);
-            await fs.promises.writeFile(this.filename, JSON.stringify(productosActualizados, null, 2));
-        } catch (error) {
-            console.log("El producto a eliminar no se pudo encontrar")
-        }
-    }
-
     async deleteAll(){
         try {
             const archivoVacio = await fs.promises.writeFile(this.filename, []);
@@ -96,7 +67,7 @@ class Contenedor {
         }
     }
 
-    async actualizar(elem, id) {
+    async update(elem, id) {
         const productos = await this.getAll();
         const index = productos.findIndex(producto => producto.id == id);
         if (index < 0) {

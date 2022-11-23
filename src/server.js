@@ -119,7 +119,7 @@ routerCarrito.delete('/:id/productos/:id_prod', async(req, res) => {
     const index = prueba.findIndex(p => p.id == req.params.id_prod);
     if(index >= 0){
         prueba.splice(index, 1);
-        await carritosContenedor.actualizar(carrito, req.params.id)
+        await carritosContenedor.update(carrito, req.params.id)
     }
     res.end()
 })
