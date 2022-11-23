@@ -30,19 +30,12 @@ class Contenedor {
             const productos = await this.getAll();
             if(productos.length>0){
                 //Agregar producto adicional
-                const lastId = productos[productos.length-1].id+1;
                 product.timestamp = Date.now();
-                product.id = lastId;
-                product.codigo = `${product.timestamp}${product.title}${product.id}`
-                product.stock = parseInt(Math.random()*10+1)
                 productos.push(product);
                 await fs.promises.writeFile(this.filename, JSON.stringify(productos, null, 2));
             } else{
                 //Agregar primer producto
-                product.id = 1;
-                product.timpestamp = Date.now();
-                product.stock = parseInt(Math.random()*10+1)
-                product.codigo = `${product.timestamp}${product.title}${product.id}`
+                product.timestamp = Date.now();
                 await fs.promises.writeFile(this.filename, JSON.stringify([product], null, 2));
             }
         } catch (error) {
@@ -84,11 +77,37 @@ class Contenedor {
         }
     }
 
+    async deleteProductById(id){
+        try {
+            const productos = await this.getAll();
+            const mismoId = productos.filter(product => product.id == id);
+            const productosActualizados = mismoId.splice(0,1);
+            await fs.promises.writeFile(this.filename, JSON.stringify(productosActualizados, null, 2));
+        } catch (error) {
+            console.log("El producto a eliminar no se pudo encontrar")
+        }
+    }
+
     async deleteAll(){
         try {
             const archivoVacio = await fs.promises.writeFile(this.filename, []);
         } catch (error) {
             console.log("No se pudieron eliminar los objetos")
+        }
+    }
+
+    async actualizar(elem, id) {
+        const productos = await this.getAll();
+        const index = productos.findIndex(producto => producto.id == id);
+        if (index < 0) {
+            return `Error al actualizar: no se encontró el id ${id}`
+        } else {
+            productos[index] = { ...elem, id }
+            try {
+                await fs.promises.writeFile(this.filename, JSON.stringify(productos, null, 2))
+            } catch (error) {
+                return `Error al borrar: ${error}`
+            }
         }
     }
 }
