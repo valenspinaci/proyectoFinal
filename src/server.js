@@ -1,10 +1,18 @@
-const express = require("express");
-const { Router } = require("express");
-const Contenedor = require("./index.js");
+import express from "express";
+import { Router } from "express";
+import { ContenedorDAOProductos, ContenedorDAOCarts } from "./daos/index.js";
+import { ContenedorArchivos } from "./managers/ContenedorArchivos.js";
 
-//Creo los dos nuevos contenedores
-const productosContenedor = new Contenedor("./productos.txt");
-const carritosContenedor = new Contenedor("./carrito.txt");
+//managers
+//const productosContenedor = new ContenedorArchivos("src/files/productos.txt");
+//const carritosContenedor = new ContenedorArchivos("./files/carrito.txt");
+//const productosContenedor = new ContenedorFirebase ("productos");
+//const carritosContenedor = new ContenedorFirebase ("carrito");
+//const productosContenedor = new ContenedorMongo (productsCollection, productsSchema);
+//const carritosContenedor = new ContenedorMongo (cartCollection, cartSchema);
+
+const productosContenedor = ContenedorDAOProductos;
+const carritosContenedor = ContenedorDAOCarts;
 
 //Pongo a funcionar router
 const routerProductos = Router();
@@ -30,7 +38,7 @@ routerProductos.get("/", async(req,res)=>{
 
 //Traer producto por su id
 routerProductos.get("/:id", async(req,res)=>{
-    id = req.params.id;
+    let id = req.params.id;
     res.json(await productosContenedor.getById(id));
 })
 

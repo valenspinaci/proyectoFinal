@@ -1,5 +1,5 @@
-const fs = require("fs");
-class Contenedor {
+import fs from "fs";
+class ContenedorArchivos {
     constructor(filename){
         this.filename = filename;
     }
@@ -35,7 +35,7 @@ class Contenedor {
                 return [];
             }
         } catch (error) {
-            return "Hubo un error leyendo el archivo";
+            return "Hubo un error leyendo los archivos";
         }
     }
 
@@ -83,4 +83,4 @@ class Contenedor {
     }
 }
 
-module.exports = Contenedor;
+export {ContenedorArchivos};
