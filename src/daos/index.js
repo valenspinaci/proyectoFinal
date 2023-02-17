@@ -4,7 +4,7 @@ import { productsCollection, productsSchema } from "../models/productos.js";
 let ContenedorDAOProductos;
 let ContenedorDAOCarts;
 
-let databaseType = "archivos";
+let databaseType = "mongo";
 
 if(databaseType == "archivos"){
     const {ProductsDAOArchivos} = await import ("./products/productsArchivos.js");
