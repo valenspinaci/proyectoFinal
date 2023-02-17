@@ -38,18 +38,17 @@ class ContenedorMongo{
 
     async deleteById(id){
         try {
-            let productos = await this.mongoModel.find();
-            let producto = productos.find(pd=>pd.id == id);
-            await producto.delete();
+            await this.mongoModel.deleteOne({_id:id});
+            console.log("Producto eliminado")
         } catch (error) {
-            console.log("No se pudo eliminar el producto")
+            console.log(error)
         }
     }
 
     async deleteAll(){
         try {
-            let productos = await this.mongoModel.find();
-            await productos.delete();
+            await this.mongoModel.deleteAll();
+            console.log("Productos eliminados")
         } catch (error) {
             console.log("No se pudieron eliminar los productos")
         }

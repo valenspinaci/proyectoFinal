@@ -19,6 +19,9 @@ import cluster from "cluster";
 import os from "os";
 import { Contenedor } from "./index.js";
 import {logger} from "./loggers/logger.js"
+import { transporter } from "./mail/email.js";
+import { mail } from "./mail/email.js";
+import { twilioClient, twilioWhatsappPhone, adminWhatsappPhone } from "./whatsapp/whatsapp.js";
 
 const argOptions = {default:{p:8080, m:"FORK"}};
 const argumentos = parseArgs(process.argv.slice(2), argOptions);
@@ -132,6 +135,10 @@ passport.deserializeUser((id, done)=>{
     })
 })
 
+let mailSignup;
+let mailCart;
+let mailCartAdd;
+
 //Estrategia de registro
 passport.use("signupStrategy", new LocalStrategy(
     {
@@ -152,8 +159,27 @@ passport.use("signupStrategy", new LocalStrategy(
                 phone:req.body.phone,
                 photo:req.body.photo
             };
+
+            mailSignup = {
+                from:"server app Node",
+                to: mail,
+                subject:"Nuevo Registro",
+                html:
+                `<div>
+                <h1>Nuevo usuario registrado!</h1>
+                <img src="${newUser.photo}" style="width:250px"/>
+                <div>
+                    <ul>
+                        <li>Nombre: ${newUser.name}</li>
+                        <li>Direccion: ${newUser.adress}</li>
+                        <li>Edad: ${newUser.age}</li>
+                        <li>Telefono: ${newUser.phone}</li>
+                    </ul>
+                </div>
+                </div>`
+            }
             userModel.create(newUser, (error, userCreated)=>{
-                if(error) return done (error, null, {message:"El usuario no pudo ser creado"})
+                if(error) return done (error, null, {message:"El usuario no pudo ser creado"});
                 return done (null, userCreated)
             })
         })
@@ -222,7 +248,14 @@ app.post("/signup", passport.authenticate("signupStrategy", {
 }) ,(req,res)=>{
     const {mail} = req.body;
     req.session.passport.username = mail;
-    res.redirect("/")
+    try {
+        transporter.sendMail(mailSignup)
+        logger.info("Mail enviado")
+        res.redirect("/")
+    } catch (error) {
+        logger.error("Hubo un error enviando el mail")
+        res.render("failSignup")
+    }
 })
 
 //Error registro
@@ -308,20 +341,47 @@ routerProductos.delete("/:id", async(req,res)=>{
 //Crear carrito
 routerCarrito.post("/",async(req,res)=>{
     const carrito = req.body;
-    if(carritosContenedor.length == 0){
+    const carritos = await carritosContenedor.getAll();
+    if(carritos.length == 0){
         carrito.id = 1;
     }else{
-        const lastId = parseInt(carritosContenedor.length) + 1;
+        const lastId = parseInt(carritos.length) + 1;
         carrito.id = parseInt(lastId + 1);
     }
     const accesoProductos = carrito.productos;
+    const titles = [];
+    const prices = [];
     accesoProductos.forEach(producto=>{
         producto.timestamp = Date.now();
         producto.stock = parseInt(Math.random()*10+1);
         producto.id = parseInt(accesoProductos.indexOf(producto) + 1);
         producto.codigo = `${producto.timestamp}${producto.title}${producto.id}`
+        titles.push(producto.title);
     })
+    mailCart ={
+        from:"server app Node",
+        to: mail,
+        subject:"Nuevo Registro",
+        html:
+        `<div>
+            <h1>Nuevo carrito con id: ${carrito.id}</h1>
+            <div>
+                <p>Los productos agregados fueron: ${titles}</p>
+            </div>
+        </div>`
+    }
+    try {
+        twilioClient.messages.create({
+            from:twilioWhatsappPhone,
+            to: adminWhatsappPhone,
+            body:`Se ha creado un nuevo carrito con el id ${carrito.id}`
+        })
+        logger.info("Whatsapp enviado");
+    } catch (error) {
+        logger.error("Error enviando el whatsapp")
+    }
     await carritosContenedor.save(carrito);
+    transporter.sendMail(mailCart);
     res.json({id : carrito.id});
 })
 
@@ -344,6 +404,19 @@ routerCarrito.post("/:id/productos", async(req,res)=>{
     const id = req.params.id;
     let productos = await productosContenedor.getById(id);
     carritosContenedor.save({productos, id});
+    mailCartAdd ={
+        from:"server app Node",
+        to: mail,
+        subject:"Nuevo Registro",
+        html:
+        `<div>
+            <h1>Producto agregado a carrito ${carrito.id}</h1>
+            <div>
+                <p>Los productos agregados fueron: ${productos}</p>
+            </div>
+        </div>`
+    }
+    transporter.sendMail(mailCartAdd);
     res.json({msg: "El producto se agrego al carrito"})
 })
 
